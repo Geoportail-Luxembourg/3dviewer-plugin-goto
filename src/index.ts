@@ -2,10 +2,27 @@ import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
 import { registerContent } from './goTo';
 
-type PluginConfig = Record<never, never>;
-type PluginState = Record<never, never>;
+type PluginConfig = object;
+type PluginState = object;
 
 type MyPlugin = VcsPlugin<PluginConfig, PluginState>;
+
+/* eslint-disable @typescript-eslint/naming-convention */
+const goToMessages = {
+  Lidar: 'LiDAR',
+  ACT2BIM: 'ACT2BIM',
+  Minecraft: 'Minecraft',
+  'Lien vers Cyclomédia': 'Cyclomedia',
+  'Ouvrir streetView': 'Street View',
+};
+
+const goToTranslations: Record<string, object> = {
+  en: { ...goToMessages, 'Go to': 'Go to' },
+  fr: { ...goToMessages, 'Go to': 'Aller vers' },
+  de: { ...goToMessages, 'Go to': 'Gehe zu' },
+  lb: { ...goToMessages, 'Go to': 'Géi op' },
+};
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export default function plugin(
   config: PluginConfig,
@@ -23,7 +40,8 @@ export default function plugin(
     get mapVersion(): string {
       return mapVersion;
     },
-    initialize(vcsUiApp: VcsUiApp, state?: PluginState): Promise<void> {
+    i18n: goToTranslations,
+    initialize(): Promise<void> {
       return Promise.resolve();
     },
     onVcsAppMounted(vcsUiApp: VcsUiApp): void {
