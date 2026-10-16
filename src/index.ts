@@ -1,5 +1,6 @@
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
+import { registerContent } from './goTo';
 
 type PluginConfig = Record<never, never>;
 type PluginState = Record<never, never>;
@@ -23,20 +24,10 @@ export default function plugin(
       return mapVersion;
     },
     initialize(vcsUiApp: VcsUiApp, state?: PluginState): Promise<void> {
-      // eslint-disable-next-line no-console
-      console.log(
-        'Called before loading the rest of the current context. Passed in the containing Vcs UI App ',
-        vcsUiApp,
-        state,
-      );
       return Promise.resolve();
     },
     onVcsAppMounted(vcsUiApp: VcsUiApp): void {
-      // eslint-disable-next-line no-console
-      console.log(
-        'Called when the root UI component is mounted and managers are ready to accept components',
-        vcsUiApp,
-      );
+      registerContent(vcsUiApp);
     },
     /**
      * should return all default values of the configuration
