@@ -15,6 +15,7 @@ export function registerContent(app: VcsUiApp): void {
   const items = exportLinks.map((link) =>
     reactive({
       title: link.labelKey,
+      ...(link.icon ? { icon: link.icon } : {}),
       clickedCallbacks: [
         async (event: PointerEvent): Promise<void> => {
           event.preventDefault();
