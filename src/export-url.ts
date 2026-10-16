@@ -9,6 +9,7 @@ export type BaseParams = {
   LON: number;
   LAT: number;
   ELEVATION: number;
+  LANG: string;
 };
 
 const PROJECTION_WGS84 = 'EPSG:4326';
@@ -113,5 +114,6 @@ export async function getBaseParams(
     LON: lon,
     LAT: lat,
     ELEVATION: Math.round(elevation),
+    LANG: app.locale,
   };
 }
