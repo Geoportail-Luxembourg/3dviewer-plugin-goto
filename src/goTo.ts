@@ -32,6 +32,7 @@ export function registerContent(app: VcsUiApp): () => void {
           window.open(interpolateUrl(link.url, params), '_blank');
         },
       ],
+      ...(link.tooltipKey.length ? { tooltip: [link.tooltipKey] } : {}),
     });
   }
 
