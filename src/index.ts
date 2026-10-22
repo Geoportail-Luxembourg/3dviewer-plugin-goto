@@ -30,6 +30,7 @@ export default function plugin(
 ): MyPlugin {
   // eslint-disable-next-line no-console
   console.log(config, baseUrl);
+  let disposeContent: (() => void) | undefined;
   return {
     get name(): string {
       return name;
@@ -45,7 +46,7 @@ export default function plugin(
       return Promise.resolve();
     },
     onVcsAppMounted(vcsUiApp: VcsUiApp): void {
-      registerContent(vcsUiApp);
+      disposeContent = registerContent(vcsUiApp);
     },
     /**
      * should return all default values of the configuration
@@ -80,6 +81,8 @@ export default function plugin(
       return [];
     },
     destroy(): void {
+      disposeContent?.();
+      disposeContent = undefined;
       // eslint-disable-next-line no-console
       console.log('hook to cleanup');
     },
