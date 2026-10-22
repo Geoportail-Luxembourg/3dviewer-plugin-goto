@@ -13,35 +13,35 @@
       "url": "https://lidar.geoportail.lu?COORD_X={LUREF_X}&COORD_Y={LUREF_Y}&COORD_Z={ELEVATION}"
     },
     {
-      "useLocationInfoCoords": true,
       "labelKey": "ACT2BIM",
       "icon": "mdi-office-building-outline",
+      "useLocationInfoCoords": true,
       "url": "https://act2bim.geoportail.lu/commande?easting={LUREF_X}&northing={LUREF_Y}"
     },
     {
-      "useLocationInfoCoords": true,
       "labelKey": "Minecraft",
       "icon": "mdi-gamepad-variant",
+      "useLocationInfoCoords": true,
       "url": "https://minecraft.geoportail.lu?easting={LUREF_X}&northing={LUREF_Y}"
     },
     {
-      "useLocationInfoCoords": true,
       "labelKey": "Lien vers Cyclomédia",
       "icon": "$vcsGlobeNature",
+      "useLocationInfoCoords": true,
       "url": "http://streetsmart.cyclomedia.com/streetsmart?q={LUREF_X};{LUREF_Y}",
       "userType": ["etat", "commune"],
       "userRoles": ["MinTour", "ACT"]
     },
     {
-      "useLocationInfoCoords": true,
       "labelKey": "Ouvrir streetView",
       "icon": "mdi-google-street-view",
+      "useLocationInfoCoords": true,
       "url": "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint={LAT},{LON}&heading=0&pitch=0&fov=90"
     },
     {
-      "useLocationInfoCoords": true,
       "labelKey": "Generic export",
       "icon": "$vcsExport",
+      "useLocationInfoCoords": true,
       "url": "https://fmeflow.geoportail.lu/fmeserver/apps/Geoportal-Exporter?dynamicParameterData={DYNAMIC_PARAMETER_DATA}",
       "userType": ["etat"]
     }
