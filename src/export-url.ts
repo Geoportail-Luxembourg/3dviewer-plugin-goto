@@ -181,7 +181,8 @@ function buildDynamicParameterData(
 function getActiveLayerIds(app: VcsUiApp): string[] {
   return [...app.layers]
     .filter((layer) => layer.active)
-    .map((layer) => layer.name);
+    .map((layer) => layer.properties.luxId as string | undefined)
+    .filter((id) => id !== undefined);
 }
 
 export async function getBaseParams(app: VcsUiApp): Promise<BaseParams | null> {
