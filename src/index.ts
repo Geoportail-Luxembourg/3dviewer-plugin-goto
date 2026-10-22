@@ -1,8 +1,10 @@
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
+import { registerContent } from './goTo';
+import { goToTranslations } from './i18n';
 
-type PluginConfig = Record<never, never>;
-type PluginState = Record<never, never>;
+type PluginConfig = object;
+type PluginState = object;
 
 type MyPlugin = VcsPlugin<PluginConfig, PluginState>;
 
@@ -12,6 +14,7 @@ export default function plugin(
 ): MyPlugin {
   // eslint-disable-next-line no-console
   console.log(config, baseUrl);
+  let disposeContent: (() => void) | undefined;
   return {
     get name(): string {
       return name;
@@ -22,21 +25,12 @@ export default function plugin(
     get mapVersion(): string {
       return mapVersion;
     },
-    initialize(vcsUiApp: VcsUiApp, state?: PluginState): Promise<void> {
-      // eslint-disable-next-line no-console
-      console.log(
-        'Called before loading the rest of the current context. Passed in the containing Vcs UI App ',
-        vcsUiApp,
-        state,
-      );
+    i18n: goToTranslations,
+    initialize(): Promise<void> {
       return Promise.resolve();
     },
     onVcsAppMounted(vcsUiApp: VcsUiApp): void {
-      // eslint-disable-next-line no-console
-      console.log(
-        'Called when the root UI component is mounted and managers are ready to accept components',
-        vcsUiApp,
-      );
+      disposeContent = registerContent(vcsUiApp);
     },
     /**
      * should return all default values of the configuration
@@ -71,6 +65,8 @@ export default function plugin(
       return [];
     },
     destroy(): void {
+      disposeContent?.();
+      disposeContent = undefined;
       // eslint-disable-next-line no-console
       console.log('hook to cleanup');
     },
