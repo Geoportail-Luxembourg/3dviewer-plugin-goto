@@ -3,66 +3,16 @@ import { type VcsUiApp, ButtonLocation } from '@vcmap/ui';
 import { createToggleAction, VcsList } from '@vcmap/ui';
 import config from '../config.json';
 import { exportLinks } from './config-export-url.json';
+import { getAuthPlugin, getAuthUser, isLinkVisible } from './auth';
 import { getBaseParams, interpolateUrl } from './export-url';
+import type { ExportLink } from './export-url.model';
+import type { GoToListItem } from './goTo.model';
 
 export const goToOptions = {
   name: 'Go to',
   title: 'Go to',
   icon: '$vcsLogout',
 };
-
-const AUTH_PLUGIN_NAME = '@geoportallux/lux-3dviewer-plugin-auth';
-
-type AuthUser = {
-  login: string;
-  role?: string;
-  typeUtilisateur?: string;
-  typeUtisilisateur?: string;
-};
-
-type AuthPlugin = {
-  readonly userState: { user: AuthUser | null };
-};
-
-type ExportLink = {
-  labelKey: string;
-  icon?: string;
-  useLocationInfoCoords: boolean;
-  url: string;
-  userType?: string[];
-  userRoles?: string[];
-};
-
-type GoToListItem = {
-  title: string;
-  icon?: string;
-  clickedCallbacks: Array<(event: PointerEvent) => Promise<void>>;
-};
-
-function isLinkVisible(link: ExportLink, user: AuthUser | null): boolean {
-  const hasRestriction = !!(link.userType?.length || link.userRoles?.length);
-  if (!hasRestriction) {
-    return true;
-  }
-  if (!user) {
-    return false;
-  }
-  const userType = user.typeUtilisateur ?? user.typeUtisilisateur;
-  const userRole = user.role;
-
-  return (
-    (!!userType && !!link.userType?.includes(userType)) ||
-    (!!userRole && !!link.userRoles?.includes(userRole))
-  );
-}
-
-function getAuthPlugin(app: VcsUiApp): AuthPlugin | undefined {
-  return app.plugins.getByKey(AUTH_PLUGIN_NAME) as AuthPlugin | undefined;
-}
-
-function getAuthUser(app: VcsUiApp): AuthUser | null {
-  return getAuthPlugin(app)?.userState.user ?? null;
-}
 
 export function registerContent(app: VcsUiApp): () => void {
   const links = exportLinks as ExportLink[];
