@@ -10,6 +10,11 @@ export type BaseParams = {
   LAT: number;
   ELEVATION: number;
   LANG: string;
+  BBOX: string;
+  BBOX_GEOJSON: string;
+  LAYER_IDS: string;
+  LAYER_IDS_SPACES: string;
+  DYNAMIC_PARAMETER_DATA: string;
 };
 
 const PROJECTION_WGS84 = 'EPSG:4326';
@@ -80,13 +85,106 @@ function getElevationFromCamera(viewpoint: Viewpoint): number | null {
   }
   // vertical component of the camera-to-target vector: pitch -90° (nadir)
   // puts the full distance on the height axis, pitch 0° puts none of it
-  const groundHeight = cameraPosition[2] - distance * Math.sin(-pitch * (Math.PI / 180));
+  const groundHeight =
+    cameraPosition[2] - distance * Math.sin(-pitch * (Math.PI / 180));
   return Number.isFinite(groundHeight) ? groundHeight : null;
 }
 
-export async function getBaseParams(
-  app: VcsUiApp,
-): Promise<BaseParams | null> {
+type SceneCapableMap = VcsMap & {
+  getScene(): { camera: { computeViewRectangle(): unknown } } | undefined;
+};
+
+type GeoRectangle = {
+  west: number;
+  south: number;
+  east: number;
+  north: number;
+};
+
+const RADIANS_TO_DEGREES = 180 / Math.PI;
+const METERS_PER_DEGREE_LAT = 111320;
+
+function getBboxFromScene(map: VcsMap): number[] | null {
+  if (!('getScene' in map)) {
+    return null;
+  }
+  const rectangle = (map as SceneCapableMap)
+    .getScene()
+    ?.camera.computeViewRectangle() as GeoRectangle | undefined;
+  if (!rectangle) {
+    return null;
+  }
+  return [
+    rectangle.west * RADIANS_TO_DEGREES,
+    rectangle.south * RADIANS_TO_DEGREES,
+    rectangle.east * RADIANS_TO_DEGREES,
+    rectangle.north * RADIANS_TO_DEGREES,
+  ];
+}
+
+function getBboxFromViewpoint(
+  viewpoint: Viewpoint,
+  lon: number,
+  lat: number,
+): number[] {
+  const halfSizeMeters =
+    typeof viewpoint.distance === 'number' &&
+    Number.isFinite(viewpoint.distance)
+      ? viewpoint.distance
+      : 1000;
+  const dLat = halfSizeMeters / METERS_PER_DEGREE_LAT;
+  const dLon = dLat / Math.max(Math.cos((lat * Math.PI) / 180), 0.01);
+  return [lon - dLon, lat - dLat, lon + dLon, lat + dLat];
+}
+
+function buildBboxGeoJson(bbox: number[]): string {
+  const [minLon, minLat, maxLon, maxLat] = bbox;
+  return JSON.stringify({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [minLon, minLat],
+              [maxLon, minLat],
+              [maxLon, maxLat],
+              [minLon, maxLat],
+              [minLon, minLat],
+            ],
+          ],
+        },
+      },
+    ],
+  });
+}
+
+function buildDynamicParameterData(
+  layerIds: string,
+  bboxGeoJson: string,
+): string {
+  return JSON.stringify([
+    {
+      name: 'layers',
+      defaultValue: layerIds,
+    },
+    {
+      name: 'GEOJSON',
+      defaultValue: bboxGeoJson,
+    },
+  ]);
+}
+
+function getActiveLayerIds(app: VcsUiApp): string[] {
+  return [...app.layers]
+    .filter((layer) => layer.active)
+    .map((layer) => layer.name);
+}
+
+export async function getBaseParams(app: VcsUiApp): Promise<BaseParams | null> {
   const map = app.maps.activeMap;
   if (!map) {
     return null;
@@ -108,6 +206,11 @@ export async function getBaseParams(
     (await getElevationFromTerrain(map, lon, lat)) ??
     (viewpoint ? getElevationFromCamera(viewpoint) : null) ??
     DEFAULT_ELEVATION;
+  const bbox = viewpoint
+    ? (getBboxFromScene(map) ?? getBboxFromViewpoint(viewpoint, lon, lat))
+    : [lon - 0.01, lat - 0.01, lon + 0.01, lat + 0.01];
+  const bboxGeoJson = buildBboxGeoJson(bbox);
+  const layerIds = getActiveLayerIds(app);
   return {
     LUREF_X: Math.round(luref[0]),
     LUREF_Y: Math.round(luref[1]),
@@ -115,5 +218,13 @@ export async function getBaseParams(
     LAT: lat,
     ELEVATION: Math.round(elevation),
     LANG: app.locale,
+    BBOX: bbox.join(','),
+    BBOX_GEOJSON: bboxGeoJson,
+    LAYER_IDS: layerIds.join(','),
+    LAYER_IDS_SPACES: layerIds.join(' '),
+    DYNAMIC_PARAMETER_DATA: buildDynamicParameterData(
+      layerIds.join(' '),
+      bboxGeoJson,
+    ),
   };
 }
