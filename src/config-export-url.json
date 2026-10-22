@@ -1,6 +1,12 @@
 {
   "exportLinks": [
     {
+      "labelKey": "3D Print",
+      "icon": "mdi-cube-outline",
+      "useLocationInfoCoords": true,
+      "url": "https://3dprint.geoportail.lu/commande?easting={LUREF_X}&northing={LUREF_Y}&scale=2500"
+    },
+    {
       "labelKey": "Lidar",
       "icon": "$vcsTerrainBox",
       "useLocationInfoCoords": true,
