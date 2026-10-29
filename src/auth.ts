@@ -21,7 +21,7 @@ export function isLinkVisible(
   if (!user) {
     return false;
   }
-  const userType = user.typeUtilisateur ?? user.typeUtisilisateur;
+  const userType = user.typeUtilisateur;
   const userRole = user.role;
 
   return (

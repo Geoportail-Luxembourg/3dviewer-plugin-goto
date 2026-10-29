@@ -1,12 +1,16 @@
 import { reactive, watch, type WatchStopHandle } from 'vue';
-import { type VcsUiApp, ButtonLocation } from '@vcmap/ui';
-import { createToggleAction, VcsList } from '@vcmap/ui';
+import {
+  type VcsUiApp,
+  ButtonLocation,
+  createToggleAction,
+  VcsList,
+  type VcsListItem,
+} from '@vcmap/ui';
 import config from '../config.json';
 import { exportLinks } from './config-export-url.json';
 import { getAuthPlugin, getAuthUser, isLinkVisible } from './auth';
 import { getBaseParams, interpolateUrl } from './export-url';
 import type { ExportLink } from './export-url.model';
-import type { GoToListItem } from './goTo.model';
 
 export const goToOptions = {
   name: 'Go to',
@@ -16,12 +20,14 @@ export const goToOptions = {
 
 export function registerContent(app: VcsUiApp): () => void {
   const links = exportLinks as ExportLink[];
-  const items = reactive<GoToListItem[]>([]);
+  const items = reactive<VcsListItem[]>([]);
 
-  function createItem(link: ExportLink): GoToListItem {
-    return reactive({
+  function createItem(link: ExportLink): VcsListItem {
+    return {
+      name: link.labelKey,
       title: link.labelKey,
       ...(link.icon ? { icon: link.icon } : {}),
+      ...(link.tooltipKey ? { tooltip: link.tooltipKey } : {}),
       clickedCallbacks: [
         async (event: PointerEvent): Promise<void> => {
           event.preventDefault();
@@ -32,8 +38,7 @@ export function registerContent(app: VcsUiApp): () => void {
           window.open(interpolateUrl(link.url, params), '_blank');
         },
       ],
-      ...(link.tooltipKey.length ? { tooltip: [link.tooltipKey] } : {}),
-    });
+    };
   }
 
   function rebuildItems(): void {

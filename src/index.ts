@@ -21,9 +21,6 @@ export default function plugin(): GoToPlugin {
       return mapVersion;
     },
     i18n: goToTranslations,
-    initialize(): Promise<void> {
-      return Promise.resolve();
-    },
     onVcsAppMounted(vcsUiApp: VcsUiApp): void {
       disposeContent = registerContent(vcsUiApp);
     },

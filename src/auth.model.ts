@@ -4,7 +4,6 @@ export type AuthUser = {
   login: string;
   role?: string;
   typeUtilisateur?: string;
-  typeUtisilisateur?: string;
 };
 
 export type AuthPlugin = {
