@@ -11,10 +11,11 @@ import { exportLinks } from './config-export-url.json';
 import { getAuthPlugin, getAuthUser, isLinkVisible } from './auth';
 import { getBaseParams, interpolateUrl } from './export-url';
 import type { ExportLink } from './export-url.model';
+import { i18nKey } from './i18n';
 
 export const goToOptions = {
-  name: 'Go to',
-  title: 'Go to',
+  name: i18nKey('Go to'),
+  title: i18nKey('Go to'),
   icon: '$vcsLogout',
 };
 
@@ -25,9 +26,9 @@ export function registerContent(app: VcsUiApp): () => void {
   function createItem(link: ExportLink): VcsListItem {
     return {
       name: link.labelKey,
-      title: link.labelKey,
+      title: i18nKey(link.labelKey),
       ...(link.icon ? { icon: link.icon } : {}),
-      ...(link.tooltipKey ? { tooltip: link.tooltipKey } : {}),
+      ...(link.tooltipKey ? { tooltip: i18nKey(link.tooltipKey) } : {}),
       clickedCallbacks: [
         async (event: PointerEvent): Promise<void> => {
           event.preventDefault();
