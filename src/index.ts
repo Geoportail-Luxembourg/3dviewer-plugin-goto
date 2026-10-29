@@ -6,14 +6,9 @@ import { goToTranslations } from './i18n';
 type PluginConfig = object;
 type PluginState = object;
 
-type MyPlugin = VcsPlugin<PluginConfig, PluginState>;
+type GoToPlugin = VcsPlugin<PluginConfig, PluginState>;
 
-export default function plugin(
-  config: PluginConfig,
-  baseUrl: string,
-): MyPlugin {
-  // eslint-disable-next-line no-console
-  console.log(config, baseUrl);
+export default function plugin(): GoToPlugin {
   let disposeContent: (() => void) | undefined;
   return {
     get name(): string {
@@ -42,18 +37,13 @@ export default function plugin(
      * should return the plugin's serialization excluding all default values
      */
     toJSON(): PluginConfig {
-      // eslint-disable-next-line no-console
-      console.log('Called when serializing this plugin instance');
       return {};
     },
     /**
      * should return the plugins state
-     * @param {boolean} forUrl
      * @returns {PluginState}
      */
-    getState(forUrl?: boolean): PluginState {
-      // eslint-disable-next-line no-console
-      console.log('Called when collecting state, e.g. for create link', forUrl);
+    getState(): PluginState {
       return {
         prop: '*',
       };
@@ -67,8 +57,6 @@ export default function plugin(
     destroy(): void {
       disposeContent?.();
       disposeContent = undefined;
-      // eslint-disable-next-line no-console
-      console.log('hook to cleanup');
     },
   };
 }
