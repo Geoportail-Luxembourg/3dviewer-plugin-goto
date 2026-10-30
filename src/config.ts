@@ -15,9 +15,10 @@ export function resolveExportLinks(
     return [...bundledExportLinks.exportLinks];
   }
   const overrideMap = new Map(overrides.map((link) => [link.labelKey, link]));
-  const merged = bundledExportLinks.exportLinks.map(
-    (link) => overrideMap.get(link.labelKey) ?? link,
-  );
+  const merged = bundledExportLinks.exportLinks.map((link) => {
+    const override = overrideMap.get(link.labelKey);
+    return override ? { ...link, ...override } : link;
+  });
   const appended = overrides.filter(
     (link) =>
       !bundledExportLinks.exportLinks.some(

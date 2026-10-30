@@ -18,13 +18,12 @@ describe('plugin config resolution', () => {
       expect(resolveExportLinks({})).toEqual(resolveExportLinks());
     });
 
-    it('overrides a single bundled link and keeps the rest', () => {
+    it('overrides a single bundled link field-wise and keeps the rest', () => {
       const links = resolveExportLinks({
         exportLinks: [
           {
             labelKey: 'Lidar',
             tooltipKey: 'Custom lidar tooltip',
-            useLocationInfoCoords: true,
             url: 'https://custom-lidar.example?x={LUREF_X}&y={LUREF_Y}',
           },
         ],
@@ -34,7 +33,8 @@ describe('plugin config resolution', () => {
         'https://custom-lidar.example?x={LUREF_X}&y={LUREF_Y}',
       );
       expect(lidar?.tooltipKey).toBe('Custom lidar tooltip');
-      expect(lidar?.icon).toBeUndefined();
+      expect(lidar?.icon).toBe('mdi-image-filter-hdr-outline');
+      expect(lidar?.useLocationInfoCoords).toBe(true);
       expect(links.length).toBe(bundled.length);
       expect(links.some((link) => link.labelKey === 'ACT2BIM')).toBe(true);
     });
@@ -73,7 +73,7 @@ describe('plugin config resolution', () => {
       expect(links).toEqual(bundled);
     });
 
-    it('replaces all fields of the matching bundled link', () => {
+    it('inherits bundled fields not present in the override', () => {
       const links = resolveExportLinks({
         exportLinks: [
           {
@@ -86,7 +86,7 @@ describe('plugin config resolution', () => {
       });
       const lidar = links.find((link) => link.labelKey === 'Lidar');
       expect(lidar?.url).toBe('https://replaced.example');
-      expect(lidar?.icon).toBeUndefined();
+      expect(lidar?.icon).toBe('mdi-image-filter-hdr-outline');
       expect(links).toContainEqual(
         bundled.find((l) => l.labelKey === 'ACT2BIM'),
       );

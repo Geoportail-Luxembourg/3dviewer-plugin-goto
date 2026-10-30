@@ -16,8 +16,9 @@ entry. Both keys are optional; when omitted, the bundled defaults apply.
 Overrides or extends the bundled link list (`src/config-export-url.json`).
 Entries are matched by `labelKey`:
 
-- a configured entry with a bundled `labelKey` **replaces** the bundled entry
-  entirely;
+- a configured entry with a bundled `labelKey` is **merged field-wise** over
+  the bundled entry — fields not provided are inherited (e.g. an override
+  changing only `url` keeps the bundled `icon` and `tooltipKey`);
 - a configured entry with an unknown `labelKey` is **appended**;
 - an entry with `"visible": false` hides the matching bundled link.
 
