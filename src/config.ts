@@ -1,8 +1,10 @@
 import bundledExportLinks from './config-export-url.json';
+import { goToTranslations, I18N_NAMESPACE } from './i18n';
 import type { ExportLink } from './export-url.model';
 
 export type PluginConfig = {
   exportLinks?: ExportLink[];
+  i18n?: Record<string, Record<string, string>>;
 };
 
 export function resolveExportLinks(
@@ -23,4 +25,29 @@ export function resolveExportLinks(
       ),
   );
   return [...merged, ...appended];
+}
+
+export function resolveI18n(
+  pluginConfig: PluginConfig = {},
+): Record<string, object> {
+  const configI18n = pluginConfig.i18n;
+  if (!configI18n) {
+    return goToTranslations;
+  }
+  const locales = [
+    ...new Set([...Object.keys(goToTranslations), ...Object.keys(configI18n)]),
+  ];
+  return Object.fromEntries(
+    locales.map((locale) => {
+      const bundledMessages = (
+        goToTranslations[locale] as Record<string, object> | undefined
+      )?.[I18N_NAMESPACE] as Record<string, string> | undefined;
+      return [
+        locale,
+        {
+          [I18N_NAMESPACE]: { ...bundledMessages, ...configI18n[locale] },
+        },
+      ];
+    }),
+  );
 }
