@@ -7,7 +7,6 @@ import {
   type VcsListItem,
 } from '@vcmap/ui';
 import config from '../config.json';
-import { exportLinks } from './config-export-url.json';
 import { getAuthPlugin, getAuthUser, isLinkVisible } from './auth';
 import { getBaseParams, interpolateUrl } from './export-url';
 import type { ExportLink } from './export-url.model';
@@ -19,8 +18,10 @@ export const goToOptions = {
   icon: '$vcsLogout',
 };
 
-export function registerContent(app: VcsUiApp): () => void {
-  const links = exportLinks as ExportLink[];
+export function registerContent(
+  app: VcsUiApp,
+  links: ExportLink[],
+): () => void {
   const items = reactive<VcsListItem[]>([]);
 
   function createItem(link: ExportLink): VcsListItem {
@@ -29,6 +30,7 @@ export function registerContent(app: VcsUiApp): () => void {
       title: i18nKey(link.labelKey),
       ...(link.icon ? { icon: link.icon } : {}),
       ...(link.tooltipKey ? { tooltip: i18nKey(link.tooltipKey) } : {}),
+      ...(link.visible !== undefined ? { visible: link.visible } : {}),
       clickedCallbacks: [
         async (event: PointerEvent): Promise<void> => {
           event.preventDefault();
