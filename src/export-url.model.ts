@@ -20,4 +20,5 @@ export type ExportLink = {
   url: string;
   userType?: string[];
   userRoles?: string[];
+  visible?: boolean;
 };

@@ -2,13 +2,14 @@ import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
 import { registerContent } from './goTo';
 import { goToTranslations } from './i18n';
+import { resolveExportLinks, type PluginConfig } from './config';
 
-type PluginConfig = object;
 type PluginState = object;
 
 type GoToPlugin = VcsPlugin<PluginConfig, PluginState>;
 
-export default function plugin(): GoToPlugin {
+export default function plugin(pluginConfig: PluginConfig = {}): GoToPlugin {
+  const exportLinks = resolveExportLinks(pluginConfig);
   let disposeContent: (() => void) | undefined;
   return {
     get name(): string {
@@ -22,19 +23,21 @@ export default function plugin(): GoToPlugin {
     },
     i18n: goToTranslations,
     onVcsAppMounted(vcsUiApp: VcsUiApp): void {
-      disposeContent = registerContent(vcsUiApp);
+      disposeContent = registerContent(vcsUiApp, exportLinks);
     },
     /**
      * should return all default values of the configuration
      */
     getDefaultOptions(): PluginConfig {
-      return {};
+      return { exportLinks: resolveExportLinks() };
     },
     /**
      * should return the plugin's serialization excluding all default values
      */
     toJSON(): PluginConfig {
-      return {};
+      return pluginConfig.exportLinks
+        ? { exportLinks: pluginConfig.exportLinks }
+        : {};
     },
     /**
      * should return the plugins state
