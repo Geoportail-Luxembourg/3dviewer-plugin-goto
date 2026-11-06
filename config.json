@@ -1,3 +1,48 @@
 {
-  "name": "@geoportallux/lux-3dviewer-plugin-goto"
+  "name": "@geoportallux/lux-3dviewer-plugin-goto",
+  "exportLinks": [
+    {
+      "labelKey": "3D Print",
+      "tooltipKey": "Generate a 3D printable model",
+      "icon": "mdi-cube-outline",
+      "url": "https://3dprint.geoportail.lu/commande?easting={LUREF_X}&northing={LUREF_Y}&scale=2500"
+    },
+    {
+      "labelKey": "Lidar",
+      "tooltipKey": "Explore point cloud data",
+      "icon": "mdi-image-filter-hdr-outline",
+      "url": "https://lidar.geoportail.lu?COORD_X={LUREF_X}&COORD_Y={LUREF_Y}&COORD_Z={ELEVATION}"
+    },
+    {
+      "labelKey": "ACT2BIM",
+      "tooltipKey": "Export 3D Model into BIM formats",
+      "icon": "mdi-office-building-outline",
+      "url": "https://act2bim.geoportail.lu/commande?easting={LUREF_X}&northing={LUREF_Y}"
+    },
+    {
+      "labelKey": "Minecraft",
+      "tooltipKey": "Export 3D Model to Minecraft",
+      "icon": "mdi-gamepad-variant",
+      "url": "https://minecraft.geoportail.lu?easting={LUREF_X}&northing={LUREF_Y}"
+    },
+    {
+      "labelKey": "Lien vers Cyclomédia",
+      "icon": "$vcsGlobeNature",
+      "url": "http://streetsmart.cyclomedia.com/streetsmart?q={LUREF_X};{LUREF_Y}",
+      "userType": ["etat", "commune"],
+      "userRoles": ["MinTour", "ACT"]
+    },
+    {
+      "labelKey": "Ouvrir streetView",
+      "tooltipKey": "Open Street View",
+      "icon": "mdi-google-street-view",
+      "url": "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint={LAT},{LON}&heading=0&pitch=0&fov=90"
+    },
+    {
+      "labelKey": "Generic export",
+      "icon": "$vcsExport",
+      "url": "https://fmeflow.geoportail.lu/fmeserver/apps/Geoportal-Exporter?dynamicParameterData={DYNAMIC_PARAMETER_DATA}",
+      "userType": ["etat"]
+    }
+  ]
 }

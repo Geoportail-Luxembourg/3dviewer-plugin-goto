@@ -14,9 +14,8 @@ export type BaseParams = {
 
 export type ExportLink = {
   labelKey: string;
-  tooltipKey: string;
+  tooltipKey?: string;
   icon?: string;
-  useLocationInfoCoords: boolean;
   url: string;
   userType?: string[];
   userRoles?: string[];

@@ -2,4 +2,85 @@
 
 > Part of the [VC Map Project](https://github.com/virtualcitySYSTEMS/map-ui)
 
-describe your plugin
+Adds a "Go to" list of export links to the 3dviewer navbar. Clicking a link
+opens a new tab with a URL built from the current map state (camera position,
+LUREF coordinates, elevation, view bbox, active layer ids, locale).
+
+## Plugin configuration
+
+The export links are configured in the app's `app.config.json` (or module
+config) under the plugin entry. The plugin registers nothing when `exportLinks`
+is missing.
+
+```jsonc
+{
+  "name": "@geoportallux/lux-3dviewer-plugin-goto",
+  "entry": "plugins/@geoportallux/lux-3dviewer-plugin-goto/index.js",
+  "exportLinks": [
+    {
+      "labelKey": "Lidar",
+      "tooltipKey": "Explore point cloud data",
+      "icon": "mdi-image-filter-hdr-outline",
+      "url": "https://lidar.geoportail.lu?COORD_X={LUREF_X}&COORD_Y={LUREF_Y}&COORD_Z={ELEVATION}",
+    },
+    {
+      "labelKey": "Generic export",
+      "icon": "$vcsExport",
+      "url": "https://fmeflow.geoportail.lu/fmeserver/apps/Geoportal-Exporter?dynamicParameterData={DYNAMIC_PARAMETER_DATA}",
+      "userType": ["etat"],
+    },
+  ],
+}
+```
+
+| Field                    | Description                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `labelKey`               | Item title, resolved as `lux3dviewerPluginGoto.<labelKey>` in the app translations.                     |
+| `tooltipKey`             | Optional tooltip, same resolution as `labelKey`.                                                        |
+| `icon`                   | Optional; `mdi-*` names or `$vcs*` aliases.                                                             |
+| `url`                    | Target URL, may contain the tokens below.                                                               |
+| `userType` / `userRoles` | Optional restriction; the link is only shown when the auth plugin reports a matching user type or role. |
+
+Supported URL tokens: `{LUREF_X}`, `{LUREF_Y}`, `{LON}`, `{LAT}`,
+`{ELEVATION}`, `{LANG}`, `{BBOX}`, `{BBOX_GEOJSON}`, `{LAYER_IDS}`,
+`{LAYER_IDS_SPACES}`, `{DYNAMIC_PARAMETER_DATA}`.
+
+## Development configuration
+
+`config.json` at the plugin root holds the same `exportLinks` for local
+development. `vcmplugin serve` and `vcmplugin preview` (i.e. `npm start` and
+`npm run preview`) use it automatically, so the list works without any app
+configuration. It is not used at runtime by the deployed app — there the app
+module config remains the source of truth.
+
+## Translations
+
+Link titles and tooltips are resolved as `lux3dviewerPluginGoto.<labelKey>` and
+`lux3dviewerPluginGoto.<tooltipKey>`, so their translations live in the app
+configuration under that namespace:
+
+```jsonc
+{
+  "i18n": [
+    {
+      "name": "FR base",
+      "fr": {
+        "lux3dviewerPluginGoto": {
+          "Lidar": "LiDAR",
+          "Explore point cloud data": "Explorer les nuages de points",
+        },
+      },
+    },
+  ],
+}
+```
+
+The plugin ships the "Go to" button title under the same namespace
+(`lux3dviewerPluginGoto.goTo`).
+
+## Notes
+
+- Coordinates come from the current camera view.
+- Restricted links (e.g. Cyclomédia, Generic export) require the
+  `@geoportallux/lux-3dviewer-plugin-auth` plugin; without a matching user
+  they stay hidden.

@@ -6,21 +6,26 @@ import {
   VcsList,
   type VcsListItem,
 } from '@vcmap/ui';
-import config from '../config.json';
-import { exportLinks } from './config-export-url.json';
+import { name } from '../package.json';
 import { getAuthPlugin, getAuthUser, isLinkVisible } from './auth';
 import { getBaseParams, interpolateUrl } from './export-url';
 import type { ExportLink } from './export-url.model';
 import { i18nKey } from './i18n';
 
 export const goToOptions = {
-  name: i18nKey('Go to'),
-  title: i18nKey('Go to'),
+  name: i18nKey('goTo'),
+  title: i18nKey('goTo'),
   icon: '$vcsLogout',
 };
 
-export function registerContent(app: VcsUiApp): () => void {
-  const links = exportLinks as ExportLink[];
+export function registerContent(
+  app: VcsUiApp,
+  links: ExportLink[],
+): () => void {
+  if (links.length === 0) {
+    return () => {};
+  }
+
   const items = reactive<VcsListItem[]>([]);
 
   function createItem(link: ExportLink): VcsListItem {
@@ -84,7 +89,7 @@ export function registerContent(app: VcsUiApp): () => void {
       icon: goToOptions.icon,
     },
     {
-      id: config.name,
+      id: name,
       props: {
         items,
         selectable: true,
@@ -101,15 +106,14 @@ export function registerContent(app: VcsUiApp): () => void {
       component: VcsList,
     },
     app.windowManager,
-    config.name,
+    name,
   );
 
-  app.navbarManager.add(
-    { id: 'goto', action },
-    config.name,
-    ButtonLocation.CONTENT,
-    { desktop: true, tablet: true, mobile: true },
-  );
+  app.navbarManager.add({ id: 'goto', action }, name, ButtonLocation.CONTENT, {
+    desktop: true,
+    tablet: true,
+    mobile: true,
+  });
 
   return () => {
     stopUserWatch?.();
