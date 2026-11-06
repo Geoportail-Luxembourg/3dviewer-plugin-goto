@@ -45,6 +45,14 @@ Supported URL tokens: `{LUREF_X}`, `{LUREF_Y}`, `{LON}`, `{LAT}`,
 `{ELEVATION}`, `{LANG}`, `{BBOX}`, `{BBOX_GEOJSON}`, `{LAYER_IDS}`,
 `{LAYER_IDS_SPACES}`, `{DYNAMIC_PARAMETER_DATA}`.
 
+## Development configuration
+
+`config.json` at the plugin root holds the same `exportLinks` for local
+development. `vcmplugin serve` and `vcmplugin preview` (i.e. `npm start` and
+`npm run preview`) use it automatically, so the list works without any app
+configuration. It is not used at runtime by the deployed app — there the app
+module config remains the source of truth.
+
 ## Translations
 
 Link titles and tooltips are resolved through the app's i18n collection, so
