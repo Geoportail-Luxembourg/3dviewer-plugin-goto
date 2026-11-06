@@ -8,19 +8,9 @@ LUREF coordinates, elevation, view bbox, active layer ids, locale).
 
 ## Plugin configuration
 
-The plugin is configured in the app's `app.config.json` under its plugin
-entry. Both keys are optional; when omitted, the bundled defaults apply.
-
-### `exportLinks`
-
-Overrides or extends the bundled link list (`src/config-export-url.json`).
-Entries are matched by `labelKey`:
-
-- a configured entry with a bundled `labelKey` is **merged field-wise** over
-  the bundled entry — fields not provided are inherited (e.g. an override
-  changing only `url` keeps the bundled `icon` and `tooltipKey`);
-- a configured entry with an unknown `labelKey` is **appended**;
-- an entry with `"visible": false` hides the matching bundled link.
+The export links are configured in the app's `app.config.json` (or module
+config) under the plugin entry. The plugin registers nothing when `exportLinks`
+is missing.
 
 ```jsonc
 {
@@ -28,41 +18,43 @@ Entries are matched by `labelKey`:
   "entry": "plugins/@geoportallux/lux-3dviewer-plugin-goto/index.js",
   "exportLinks": [
     {
-      "labelKey": "Internal tool",
-      "tooltipKey": "Internal tool",
-      "icon": "mdi-tools",
-      "useLocationInfoCoords": true,
-      "url": "https://internal.example?x={LUREF_X}&y={LUREF_Y}",
+      "labelKey": "Lidar",
+      "tooltipKey": "Explore point cloud data",
+      "icon": "mdi-image-filter-hdr-outline",
+      "url": "https://lidar.geoportail.lu?COORD_X={LUREF_X}&COORD_Y={LUREF_Y}&COORD_Z={ELEVATION}",
     },
-    { "labelKey": "Minecraft", "visible": false },
+    {
+      "labelKey": "Generic export",
+      "icon": "$vcsExport",
+      "url": "https://fmeflow.geoportail.lu/fmeserver/apps/Geoportal-Exporter?dynamicParameterData={DYNAMIC_PARAMETER_DATA}",
+      "userType": ["etat"],
+    },
   ],
 }
 ```
+
+| Field                    | Description                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `labelKey`               | Item title. An i18n key if the app translates it, otherwise the displayed text.                         |
+| `tooltipKey`             | Optional tooltip, same resolution as `labelKey`.                                                        |
+| `icon`                   | Optional; `mdi-*` names or `$vcs*` aliases.                                                             |
+| `url`                    | Target URL, may contain the tokens below.                                                               |
+| `userType` / `userRoles` | Optional restriction; the link is only shown when the auth plugin reports a matching user type or role. |
 
 Supported URL tokens: `{LUREF_X}`, `{LUREF_Y}`, `{LON}`, `{LAT}`,
 `{ELEVATION}`, `{LANG}`, `{BBOX}`, `{BBOX_GEOJSON}`, `{LAYER_IDS}`,
 `{LAYER_IDS_SPACES}`, `{DYNAMIC_PARAMETER_DATA}`.
 
-### `i18n`
+## Translations
 
-Adds or overrides translations for link titles (`labelKey`) and tooltips
-(`tooltipKey`). Keys are the raw label/tooltip strings; the plugin namespace
-(`lux3dviewerPluginGoto`) is applied automatically. Locales not provided keep
-the bundled translations.
-
-```jsonc
-{
-  "i18n": {
-    "fr": { "Lidar": "Lidar (fr)", "Internal tool": "Outil interne" },
-    "en": { "Internal tool": "Internal tool" },
-  },
-}
-```
+Link titles and tooltips are resolved through the app's i18n collection, so
+their translations belong to the app configuration, alongside the links
+themselves. The plugin only ships the "Go to" button title
+(`lux3dviewerPluginGoto.goTo`).
 
 ## Notes
 
-- Links restricted by `userType` / `userRoles` (e.g. Cyclomédia, Generic
-  export) are only visible when the `@geoportallux/lux-3dviewer-plugin-auth`
-  plugin reports a matching user.
-- Coordinates come from the current camera view; the `useLocationInfoCoords`
-  flag of the bundled config is not evaluated.
+- Coordinates come from the current camera view.
+- Restricted links (e.g. Cyclomédia, Generic export) require the
+  `@geoportallux/lux-3dviewer-plugin-auth` plugin; without a matching user
+  they stay hidden.

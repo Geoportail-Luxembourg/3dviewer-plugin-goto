@@ -13,8 +13,8 @@ import type { ExportLink } from './export-url.model';
 import { i18nKey } from './i18n';
 
 export const goToOptions = {
-  name: i18nKey('Go to'),
-  title: i18nKey('Go to'),
+  name: i18nKey('goTo'),
+  title: i18nKey('goTo'),
   icon: '$vcsLogout',
 };
 
@@ -22,15 +22,18 @@ export function registerContent(
   app: VcsUiApp,
   links: ExportLink[],
 ): () => void {
+  if (links.length === 0) {
+    return () => {};
+  }
+
   const items = reactive<VcsListItem[]>([]);
 
   function createItem(link: ExportLink): VcsListItem {
     return {
       name: link.labelKey,
-      title: i18nKey(link.labelKey),
+      title: link.labelKey,
       ...(link.icon ? { icon: link.icon } : {}),
-      ...(link.tooltipKey ? { tooltip: i18nKey(link.tooltipKey) } : {}),
-      ...(link.visible !== undefined ? { visible: link.visible } : {}),
+      ...(link.tooltipKey ? { tooltip: link.tooltipKey } : {}),
       clickedCallbacks: [
         async (event: PointerEvent): Promise<void> => {
           event.preventDefault();

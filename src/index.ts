@@ -1,15 +1,18 @@
 import type { VcsPlugin, VcsUiApp, PluginConfigEditor } from '@vcmap/ui';
 import { name, version, mapVersion } from '../package.json';
 import { registerContent } from './goTo';
-import { resolveExportLinks, resolveI18n, type PluginConfig } from './config';
+import { goToTranslations } from './i18n';
+import type { ExportLink } from './export-url.model';
+
+export type PluginConfig = {
+  exportLinks?: ExportLink[];
+};
 
 type PluginState = object;
 
 type GoToPlugin = VcsPlugin<PluginConfig, PluginState>;
 
 export default function plugin(pluginConfig: PluginConfig = {}): GoToPlugin {
-  const exportLinks = resolveExportLinks(pluginConfig);
-  const i18n = resolveI18n(pluginConfig);
   let disposeContent: (() => void) | undefined;
   return {
     get name(): string {
@@ -21,28 +24,24 @@ export default function plugin(pluginConfig: PluginConfig = {}): GoToPlugin {
     get mapVersion(): string {
       return mapVersion;
     },
-    i18n,
+    i18n: goToTranslations,
     onVcsAppMounted(vcsUiApp: VcsUiApp): void {
-      disposeContent = registerContent(vcsUiApp, exportLinks);
+      disposeContent = registerContent(
+        vcsUiApp,
+        pluginConfig.exportLinks ?? [],
+      );
     },
     /**
      * should return all default values of the configuration
      */
     getDefaultOptions(): PluginConfig {
-      return { exportLinks: resolveExportLinks() };
+      return {};
     },
     /**
      * should return the plugin's serialization excluding all default values
      */
     toJSON(): PluginConfig {
-      const json: PluginConfig = {};
-      if (pluginConfig.exportLinks) {
-        json.exportLinks = pluginConfig.exportLinks;
-      }
-      if (pluginConfig.i18n) {
-        json.i18n = pluginConfig.i18n;
-      }
-      return json;
+      return pluginConfig;
     },
     /**
      * should return the plugins state
