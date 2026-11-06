@@ -31,9 +31,9 @@ export function registerContent(
   function createItem(link: ExportLink): VcsListItem {
     return {
       name: link.labelKey,
-      title: link.labelKey,
+      title: i18nKey(link.labelKey),
       ...(link.icon ? { icon: link.icon } : {}),
-      ...(link.tooltipKey ? { tooltip: link.tooltipKey } : {}),
+      ...(link.tooltipKey ? { tooltip: i18nKey(link.tooltipKey) } : {}),
       clickedCallbacks: [
         async (event: PointerEvent): Promise<void> => {
           event.preventDefault();

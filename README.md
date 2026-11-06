@@ -35,7 +35,7 @@ is missing.
 
 | Field                    | Description                                                                                             |
 | ------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `labelKey`               | Item title. An i18n key if the app translates it, otherwise the displayed text.                         |
+| `labelKey`               | Item title, resolved as `lux3dviewerPluginGoto.<labelKey>` in the app translations.                     |
 | `tooltipKey`             | Optional tooltip, same resolution as `labelKey`.                                                        |
 | `icon`                   | Optional; `mdi-*` names or `$vcs*` aliases.                                                             |
 | `url`                    | Target URL, may contain the tokens below.                                                               |
@@ -55,9 +55,27 @@ module config remains the source of truth.
 
 ## Translations
 
-Link titles and tooltips are resolved through the app's i18n collection, so
-their translations belong to the app configuration, alongside the links
-themselves. The plugin only ships the "Go to" button title
+Link titles and tooltips are resolved as `lux3dviewerPluginGoto.<labelKey>` and
+`lux3dviewerPluginGoto.<tooltipKey>`, so their translations live in the app
+configuration under that namespace:
+
+```jsonc
+{
+  "i18n": [
+    {
+      "name": "FR base",
+      "fr": {
+        "lux3dviewerPluginGoto": {
+          "Lidar": "LiDAR",
+          "Explore point cloud data": "Explorer les nuages de points",
+        },
+      },
+    },
+  ],
+}
+```
+
+The plugin ships the "Go to" button title under the same namespace
 (`lux3dviewerPluginGoto.goTo`).
 
 ## Notes
