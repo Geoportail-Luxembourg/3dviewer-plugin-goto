@@ -6,7 +6,7 @@ import {
   VcsList,
   type VcsListItem,
 } from '@vcmap/ui';
-import config from '../config.json';
+import { name } from '../package.json';
 import { getAuthPlugin, getAuthUser, isLinkVisible } from './auth';
 import { getBaseParams, interpolateUrl } from './export-url';
 import type { ExportLink } from './export-url.model';
@@ -89,7 +89,7 @@ export function registerContent(
       icon: goToOptions.icon,
     },
     {
-      id: config.name,
+      id: name,
       props: {
         items,
         selectable: true,
@@ -106,15 +106,14 @@ export function registerContent(
       component: VcsList,
     },
     app.windowManager,
-    config.name,
+    name,
   );
 
-  app.navbarManager.add(
-    { id: 'goto', action },
-    config.name,
-    ButtonLocation.CONTENT,
-    { desktop: true, tablet: true, mobile: true },
-  );
+  app.navbarManager.add({ id: 'goto', action }, name, ButtonLocation.CONTENT, {
+    desktop: true,
+    tablet: true,
+    mobile: true,
+  });
 
   return () => {
     stopUserWatch?.();
