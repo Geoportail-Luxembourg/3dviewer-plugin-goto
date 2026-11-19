@@ -4,6 +4,7 @@ import {
   ButtonLocation,
   createToggleAction,
   VcsList,
+  WindowSlot,
   type VcsListItem,
 } from '@vcmap/ui';
 import { name } from '../package.json';
@@ -99,10 +100,7 @@ export function registerContent(
         headerTitle: goToOptions.name,
         headerIcon: goToOptions.icon,
       },
-      position: {
-        top: 0,
-        left: 322,
-      },
+      slot: WindowSlot.DYNAMIC_LEFT,
       component: VcsList,
     },
     app.windowManager,
