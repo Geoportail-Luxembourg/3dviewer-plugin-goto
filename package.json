@@ -43,7 +43,8 @@
     "./dist": "./dist/index.js"
   },
   "repository": {
-    "url": "https://github.com/Geoportail-Luxembourg/@geoportallux/lux-3dviewer-plugin-goto"
+    "type": "git",
+    "url": "git+https://github.com/Geoportail-Luxembourg/3dviewer-plugin-goto.git"
   },
   "prettier": "@vcsuite/eslint-config/prettier.js",
   "peerDependencies": {
